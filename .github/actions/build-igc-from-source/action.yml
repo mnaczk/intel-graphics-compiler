@@ -76,14 +76,14 @@ runs:
       with:
         repository: KhronosGroup/SPIRV-Tools
         path: SPIRV-Tools
-        ref: ${{ inputs.spirv-tools }}
+        ref: ${{ inputs.ref_spirv-tools }}
 
     - name: Checkout spirv-headers
       uses: actions/checkout@v3
       with:
         repository: KhronosGroup/SPIRV-Headers
         path: SPIRV-Headers
-        ref: ${{ inputs.spirv-tools }}
+        ref: ${{ inputs.ref_spirv-headers }}
 
     - name: Checkout IGC
       uses: actions/checkout@v3
@@ -94,7 +94,7 @@ runs:
     - name: Get depences
       shell: bash
       run: |
-        sudo apt-get install -y git build-essential cmake flex bison software-properties-common
+        sudo apt-get install -y git build-essential cmake flex bison software-properties-common file
 
     - name: Configure
       shell: bash
@@ -102,14 +102,9 @@ runs:
         mkdir build && cd build
         cmake                                                                           \
           -Wno-dev                                                                      \
-          -DFCL_OPTION__LIBRARY_NAME=igdfcl                                             \
-          -DCOMMON_CLANG_LIBRARY_NAME=opencl-clang                                      \
-          -DIGC_OPTION__INCLUDE_IGC_COMPILER_TOOLS=OFF                                  \
-          -DSKIP_SPIRV_TOOLS_INSTALL=TRUE                                               \
-          -DIGC_OPTION__ARCHITECTURE_TARGET=Linux64                                     \
           -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}                                   \
           -DIGC_OPTION__LLVM_PREFERRED_VERSION=${{ inputs.LLVM_PREFERRED_VERSION }}     \
-          -DCCLANG_BUILD_INTREE_LLVM=1                                                  \
+          -DCCLANG_BUILD_INTREE_LLVM=True                                               \
           -DLLVM_ENABLE_PROJECTS="clang"                                                \
           ../igc
           
@@ -118,7 +113,8 @@ runs:
       shell: bash
       run: |
         cd build
-        cmake --build .
+        echo [mnaczk] proc number `nproc`
+        make -j2
 
     - name: Package
       shell: bash
@@ -127,7 +123,7 @@ runs:
         make package
 
     - name: Publish artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: IGC_Ubuntu_${{ inputs.LLVM_PREFERRED_VERSION }}_${{ inputs.ref_igc }}
         path: ./build/*.deb

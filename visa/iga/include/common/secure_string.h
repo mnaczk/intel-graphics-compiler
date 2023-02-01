@@ -6,6 +6,9 @@ SPDX-License-Identifier: MIT
 
 ============================= end_copyright_notice ===========================*/
 
+namespace iga
+{
+
 #pragma once
 #if ((!defined _WIN32) && ( !defined __STDC_LIB_EXT1__ ))
 
@@ -115,3 +118,5 @@ _snprintf_s(char *buffer, size_t sizeOfBuffer, size_t count, const char *format,
 }
 
 #endif
+
+} // namespace iga
