@@ -1,0 +1,48 @@
+# ===---
+# Running on push & pull_request.
+#   This workflow parses the destination branch
+#   to choose correct dependencies revisions
+# ===---
+
+name: On push & pull-request verification
+run-name: '${{ github.event_name }}: ${{ github.base_ref }} ${{ github.ref_name }}' # github.base_ref null for 'on: push'
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize       # commit pushed to the PR
+      - ready_for_review  # moved from draft state
+
+jobs:
+
+  verify_default_branch:
+    name: Verify for `master` branch
+    # ref_name for 'on: push'
+    # base_ref for 'on: pull_request'
+    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'pull_request' && github.base_ref == 'master') }}
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout igc sources for action files
+        uses: actions/checkout@v3
+
+      - name: Run build-igc-from-source action
+        uses: ./.github/actions/build-igc-from-source
+        with:
+          ref_igc: ${{ github.ref }}
+          ref_llvm: llvmorg-11.1.0
+          ref_translator: llvm_release_110
+          ref_opencl-clang: ocl-open-110
+          ref_vc-intrinsics: v0.7.1
+          ref_spirv-tools: sdk-1.3.204.1
+          ref_spirv-headers: sdk-1.3.204.1
+          build_type: Release
+          LLVM_PREFERRED_VERSION: 11.1.0
+          
