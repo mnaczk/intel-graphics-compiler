@@ -12,7 +12,6 @@ SPDX-License-Identifier: MIT
 #include "inc/common/sku_wa.h"
 #include "compiler_caps.h"
 #include "Compiler/CISACodeGen/Platform.hpp"
-#include "inc/common/secure_mem.h"
 
 #include <string.h>
 #include <sstream>

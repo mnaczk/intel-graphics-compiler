@@ -32,6 +32,8 @@ inline errno_t memcpy_s( void *dst, size_t numberOfElements, const void *src, si
 }
 #endif
 
+#ifndef FOPEN_S
+#define FOPEN_S
 inline errno_t fopen_s( FILE** pFile, const char* filename, const char *mode )
 {
     if( pFile == NULL )
@@ -45,5 +47,6 @@ inline errno_t fopen_s( FILE** pFile, const char* filename, const char *mode )
     }
     return 0;
 }
+#endif
 
 #endif
